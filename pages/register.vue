@@ -6,25 +6,73 @@
       Manage your employees to achieve <br />
       a bigger goals for your company
     </p>
-    <form class="w-full card">
+    <form class="w-full card" @submit.prevent="registerUser">
       <div class="form-group">
-        <label for="" class="text-grey">Company Name</label>
-        <input type="text" class="input-field" />
+        <label for="name" class="text-grey">Full Name</label>
+        <input
+          id="name"
+          type="text"
+          class="input-field"
+          v-model="register.name"
+        />
       </div>
       <div class="form-group">
-        <label for="" class="text-grey">Email Address</label>
-        <input type="email" class="input-field" />
+        <label for="email" class="text-grey">Email Address</label>
+        <input
+          id="email"
+          type="email"
+          class="input-field"
+          v-model="register.email"
+        />
       </div>
       <div class="form-group">
-        <label for="" class="text-grey">Password</label>
-        <input type="password" class="input-field" />
+        <label for="password" class="text-grey">Password</label>
+        <input
+          id="password"
+          type="password"
+          class="input-field"
+          v-model="register.password"
+        />
       </div>
-      <a href="signin.html" class="w-full btn btn-primary mt-[14px]">
+      <button type="submit" class="w-full btn btn-primary mt-[14px]">
         Continue
-      </a>
-      <!-- <button type="button" class="w-full btn btn-primary mt-[14px]">
-                Continue
-            </button> -->
+      </button>
     </form>
   </section>
 </template>
+
+<script>
+export default {
+  auth: 'guest',
+  data() {
+    return {
+      register: {
+        name: '',
+        email: '',
+        password: '',
+      },
+    }
+  },
+  methods: {
+    async registerUser() {
+      const { name, email, password } = this.register
+      try {
+        await this.$axios.$post('/register', { name, email, password })
+
+        try {
+          await this.$auth.loginWith('local', {
+            data: {
+              email,
+              password,
+            },
+          })
+        } catch (error) {
+          console.log(error)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    },
+  },
+}
+</script>

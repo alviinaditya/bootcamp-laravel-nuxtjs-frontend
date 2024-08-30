@@ -6,26 +6,55 @@
       Manage your employees to achieve <br />
       a bigger goals for your company
     </p>
-    <form class="w-full card">
+    <form @submit.prevent="loginUser" class="w-full card">
       <div class="form-group">
-        <label for="" class="text-grey">Email Address</label>
-        <input type="email" class="input-field" />
+        <label for="email" class="text-grey">Email Address</label>
+        <input
+          id="email"
+          type="email"
+          placeholder="email@example.com"
+          class="input-field"
+          v-model="login.email"
+        />
       </div>
       <div class="form-group">
-        <label for="" class="text-grey">Password</label>
-        <input type="password" class="input-field" />
+        <label for="password" class="text-grey">Password</label>
+        <input
+          id="password"
+          type="password"
+          placeholder="🞄🞄🞄🞄🞄🞄🞄🞄"
+          class="input-field"
+          v-model="login.password"
+        />
       </div>
-      <a href="index.html" class="w-full btn btn-primary mt-[14px]">
+      <button type="submit" class="w-full btn btn-primary mt-[14px]">
         Sign In
-      </a>
-      <!-- <button type="button" class="w-full btn btn-primary mt-[14px]">
-                Sign In
-            </button> -->
+      </button>
     </form>
   </section>
 </template>
 <script>
 export default {
-  name: 'LoginPage',
+  auth: 'guest',
+  data() {
+    return {
+      login: {
+        email: '',
+        password: '',
+      },
+    }
+  },
+  methods: {
+    async loginUser() {
+      try {
+        const response = await this.$auth.loginWith('local', {
+          data: this.login,
+        })
+        console.log(response)
+      } catch (error) {
+        console.log(error)
+      }
+    },
+  },
 }
 </script>

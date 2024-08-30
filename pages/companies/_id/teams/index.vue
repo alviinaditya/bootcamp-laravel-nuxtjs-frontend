@@ -21,7 +21,7 @@
             ></path>
           </svg>
         </a>
-        <div class="text-[32px] font-semibold text-dark">Company Roles</div>
+        <div class="text-[32px] font-semibold text-dark">My Teams</div>
       </div>
       <div class="flex items-center gap-4">
         <form class="shrink md:w-[516px] w-full">
@@ -52,65 +52,47 @@
             <div class="text-xl font-medium text-dark">Available</div>
             <p class="text-grey">Empower company</p>
           </div>
-          <a href="roles-create.html" class="btn btn-primary">New Role</a>
+          <NuxtLink :to="{ name: 'teams-create' }" class="btn btn-primary"
+            >Build New Team</NuxtLink
+          >
         </div>
       </div>
 
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-[30px]">
-        <div class="items-center card !flex-row gap-4">
+      <div
+        class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:gap-10 lg:gap-3"
+      >
+        <div class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0">
           <a
             href="#"
             class="absolute inset-0 focus:ring-2 ring-primary rounded-[26px]"
           ></a>
-          <img src="/assets/svgs/ric-flag.svg" alt="" />
-          <div>
-            <div class="mb-1 font-semibold text-dark">Product Designer</div>
-            <p class="text-grey">12 people assigned</p>
+          <img src="/assets/svgs/ric-box.svg" alt="" />
+          <div class="mt-6 mb-1 font-semibold text-center text-dark">
+            Growth Marketing
           </div>
+          <p class="text-center text-grey">12 People</p>
         </div>
-        <div class="items-center card !flex-row gap-4">
+        <div class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0">
           <a
             href="#"
             class="absolute inset-0 focus:ring-2 ring-primary rounded-[26px]"
           ></a>
-          <img src="/assets/svgs/ric-flag.svg" alt="" />
-          <div>
-            <div class="mb-1 font-semibold text-dark">iOS Engineer</div>
-            <p class="text-grey">12 people assigned</p>
+          <img src="/assets/svgs/ric-target.svg" alt="" />
+          <div class="mt-6 mb-1 font-semibold text-center text-dark">
+            User Growth
           </div>
+          <p class="text-center text-grey">5,312 People</p>
         </div>
-        <div class="items-center card !flex-row gap-4">
+        <div class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0">
           <a
             href="#"
             class="absolute inset-0 focus:ring-2 ring-primary rounded-[26px]"
           ></a>
-          <img src="/assets/svgs/ric-flag.svg" alt="" />
-          <div>
-            <div class="mb-1 font-semibold text-dark">Marketing</div>
-            <p class="text-grey">12 people assigned</p>
+          <img src="/assets/svgs/ric-award.svg" alt="" />
+          <div class="mt-6 mb-1 font-semibold text-center text-dark">
+            Gamification
           </div>
-        </div>
-        <div class="items-center card !flex-row gap-4">
-          <a
-            href="#"
-            class="absolute inset-0 focus:ring-2 ring-primary rounded-[26px]"
-          ></a>
-          <img src="/assets/svgs/ric-flag.svg" alt="" />
-          <div>
-            <div class="mb-1 font-semibold text-dark">DevOps Power</div>
-            <p class="text-grey">12 people assigned</p>
-          </div>
-        </div>
-        <div class="items-center card !flex-row gap-4">
-          <a
-            href="#"
-            class="absolute inset-0 focus:ring-2 ring-primary rounded-[26px]"
-          ></a>
-          <img src="/assets/svgs/ric-flag.svg" alt="" />
-          <div>
-            <div class="mb-1 font-semibold text-dark">Quality Assurance</div>
-            <p class="text-grey">12 people assigned</p>
-          </div>
+          <p class="text-center text-grey">893 People</p>
         </div>
       </div>
     </section>
