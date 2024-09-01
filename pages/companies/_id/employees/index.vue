@@ -25,15 +25,17 @@
         <div class="text-[32px] font-semibold text-dark">Employees</div>
       </div>
       <div class="flex items-center gap-4">
-        <form class="shrink md:w-[516px] w-full">
+        <div class="shrink md:w-[516px] w-full">
           <input
             type="text"
-            name=""
-            id=""
+            name="search"
+            id="search"
             class="input-field !outline-none !border-none italic form-icon-search ring-indigo-200 focus:ring-2 transition-all duration-300 w-full"
-            placeholder="Search people, team, project"
+            placeholder="Search people, team, role"
+            v-model="searchQuery"
+            @input="filterEmployees"
           />
-        </form>
+        </div>
         <a
           href="#"
           class="flex-none w-[46px] h-[46px] bg-white rounded-full p-[11px] relative notification-dot"
@@ -53,7 +55,9 @@
             <div class="text-xl font-medium text-dark">Statistics</div>
             <p class="text-grey">Your team powers</p>
           </div>
-          <NuxtLink :to="{ name: 'employees-create' }" class="btn btn-primary"
+          <NuxtLink
+            :to="{ name: 'companies-id-employees-create' }"
+            class="btn btn-primary"
             >Add Employee</NuxtLink
           >
         </div>
@@ -65,7 +69,7 @@
             <div>
               <p class="text-grey">In Total</p>
               <div class="text-[32px] font-bold text-dark mt-[6px]">
-                425,000
+                {{ loadingEmployees ? '...' : totalEmployees }}
               </div>
             </div>
           </div>
@@ -75,7 +79,7 @@
             <div>
               <p class="text-grey">Active</p>
               <div class="text-[32px] font-bold text-dark mt-[6px]">
-                205,399
+                {{ loadingEmployees ? '...' : activeEmployees }}
               </div>
             </div>
           </div>
@@ -85,7 +89,7 @@
             <div>
               <p class="text-grey">Inactive</p>
               <div class="text-[32px] font-bold text-dark mt-[6px]">
-                142,593
+                {{ loadingEmployees ? '...' : inactiveEmployees }}
               </div>
             </div>
           </div>
@@ -105,138 +109,57 @@
       </div>
 
       <div
+        v-if="loadingEmployees"
+        class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:gap-10 lg:gap-3"
+      >
+        <div
+          v-for="i in 4"
+          :key="i"
+          class="items-center card py-6 md:!py-10 md:!px-[30px] !gap-y-0"
+        >
+          <Skeleton type="circle" class="w-16 h-16" />
+          <Skeleton class="w-20 h-4 mt-6 mb-2" />
+          <Skeleton class="h-4 mb-2 w-28" />
+          <Skeleton class="w-20 h-4" />
+          <Skeleton type="circle" class="mt-[30px] w-20 h-6" />
+        </div>
+      </div>
+      <div
+        v-else
         class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:gap-10 lg:gap-3"
       >
         <!-- Card -->
-        <div class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0">
+        <div
+          v-for="employee in filteredEmployees"
+          :key="employee.id"
+          class="items-center card py-6 md:!py-10 md:!px-[30px] !gap-y-0"
+        >
           <a
             href="#"
             class="absolute inset-0 focus:ring-2 ring-primary rounded-[26px]"
           ></a>
-          <img src="/assets/images/user-f-1.png" width="70" alt="" />
-          <div class="mt-6 mb-1 font-semibold text-center text-dark">
-            Andini Danna
+          <Avatar :icon="employee.photo" :name="employee.name" />
+          <div class="mt-6 mb-1 text-xs uppercase text-primary">
+            {{ employee.team.name }}
           </div>
-          <p class="text-center text-grey">Product Designer</p>
-          <div class="mt-[30px] text-success flex items-center gap-[6px]">
+          <div class="mb-1 font-semibold text-center text-dark">
+            {{ employee.name }}
+          </div>
+          <p class="text-sm text-center text-grey">{{ employee.role.name }}</p>
+          <div
+            v-if="employee.is_verified"
+            class="mt-[30px] text-success flex items-center gap-[6px]"
+          >
             <img src="/assets//svgs/ic-check-circle.svg" alt="" />
             Verified
           </div>
-        </div>
-        <div class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0">
-          <a
-            href="#"
-            class="absolute inset-0 focus:ring-2 ring-primary rounded-[26px]"
-          ></a>
-          <img src="/assets/images/user-m-1.png" width="70" alt="" />
-          <div class="mt-6 mb-1 font-semibold text-center text-dark">
-            Ferrari Three
-          </div>
-          <p class="text-center text-grey">Quality Manager</p>
-          <div class="mt-[30px] text-success flex items-center gap-[6px]">
-            <img src="/assets//svgs/ic-check-circle.svg" alt="" />
-            Verified
-          </div>
-        </div>
-        <!-- Card -->
-        <div class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0">
-          <a
-            href="#"
-            class="absolute inset-0 focus:ring-2 ring-primary rounded-[26px]"
-          ></a>
-          <img src="/assets/images/user-m-2.png" width="70" alt="" />
-          <div class="mt-6 mb-1 font-semibold text-center text-dark">
-            Sapiire Muke
-          </div>
-          <p class="text-center text-grey">iOS Engineer</p>
-          <a
-            href="#verify"
-            class="text-blue-700 mt-[30px] underline relative z-20"
+          <button
+            v-else
+            @click="verifyEmployee(employee.id)"
+            class="btn bg-gray-200 font-normal py-2 px-4 text-sm mt-[22px] relative z-20 hover:bg-gray-300"
           >
             Verify Now
-          </a>
-        </div>
-        <!-- Card -->
-        <div class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0">
-          <a
-            href="#"
-            class="absolute inset-0 focus:ring-2 ring-primary rounded-[26px]"
-          ></a>
-          <img src="/assets/images/user-f-2.png" width="70" alt="" />
-          <div class="mt-6 mb-1 font-semibold text-center text-dark">
-            Mw Kemanna
-          </div>
-          <p class="text-center text-grey">Website Developer</p>
-          <div class="mt-[30px] text-success flex items-center gap-[6px]">
-            <img src="/assets//svgs/ic-check-circle.svg" alt="" />
-            Verified
-          </div>
-        </div>
-        <!-- Card -->
-        <div class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0">
-          <a
-            href="#"
-            class="absolute inset-0 focus:ring-2 ring-primary rounded-[26px]"
-          ></a>
-          <img src="/assets/images/user-m-3.png" width="70" alt="" />
-          <div class="mt-6 mb-1 font-semibold text-center text-dark">
-            Onna Appa
-          </div>
-          <p class="text-center text-grey">Product Designer</p>
-          <div class="mt-[30px] text-success flex items-center gap-[6px]">
-            <img src="/assets//svgs/ic-check-circle.svg" alt="" />
-            Verified
-          </div>
-        </div>
-        <!-- Card -->
-        <div class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0">
-          <a
-            href="#"
-            class="absolute inset-0 focus:ring-2 ring-primary rounded-[26px]"
-          ></a>
-          <img src="/assets/images/user-f-3.png" width="70" alt="" />
-          <div class="mt-6 mb-1 font-semibold text-center text-dark">
-            Hehe Nadiia
-          </div>
-          <p class="text-center text-grey">Quality Manager</p>
-          <div class="mt-[30px] text-success flex items-center gap-[6px]">
-            <img src="/assets//svgs/ic-check-circle.svg" alt="" />
-            Verified
-          </div>
-        </div>
-        <!-- Card -->
-        <div class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0">
-          <a
-            href="#"
-            class="absolute inset-0 focus:ring-2 ring-primary rounded-[26px]"
-          ></a>
-          <img src="/assets/images/user-m-4.png" width="70" alt="" />
-          <div class="mt-6 mb-1 font-semibold text-center text-dark">
-            Jamboel
-          </div>
-          <p class="text-center text-grey">iOS Engineer</p>
-          <a
-            href="#verify"
-            class="text-blue-700 mt-[30px] underline relative z-20"
-          >
-            Verify Now
-          </a>
-        </div>
-        <!-- Card -->
-        <div class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0">
-          <a
-            href="#"
-            class="absolute inset-0 focus:ring-2 ring-primary rounded-[26px]"
-          ></a>
-          <img src="/assets/images/user-f-4.png" width="70" alt="" />
-          <div class="mt-6 mb-1 font-semibold text-center text-dark">
-            Eksis Melita
-          </div>
-          <p class="text-center text-grey">Website Developer</p>
-          <div class="mt-[30px] text-success flex items-center gap-[6px]">
-            <img src="/assets//svgs/ic-check-circle.svg" alt="" />
-            Verified
-          </div>
+          </button>
         </div>
       </div>
     </section>
@@ -244,7 +167,48 @@
 </template>
 
 <script>
+import Avatar from '~/components/Avatar.vue'
+import { mapState, mapActions } from 'vuex'
 export default {
   layout: 'dashboard',
+  components: {
+    Avatar,
+  },
+  data() {
+    return {
+      searchQuery: '',
+      filteredEmployees: [],
+    }
+  },
+  mounted() {
+    this.fetchEmployees(this.$route.params.id)
+    this.filterEmployees()
+  },
+  computed: {
+    ...mapState('companies/employees', [
+      'employees',
+      'totalEmployees',
+      'activeEmployees',
+      'inactiveEmployees',
+      'loadingEmployees',
+      'errorEmployees',
+    ]),
+  },
+  methods: {
+    ...mapActions('companies/employees', ['fetchEmployees', 'verifyEmployee']),
+    filterEmployees() {
+      const query = this.searchQuery.toLowerCase()
+      if (!query) {
+        this.filteredEmployees = this.employees
+      }
+      this.filteredEmployees = this.employees.filter((employee) => {
+        return (
+          employee.name.toLowerCase().includes(query) ||
+          employee.team.name.toLowerCase().includes(query) ||
+          employee.role.name.toLowerCase().includes(query)
+        )
+      })
+    },
+  },
 }
 </script>

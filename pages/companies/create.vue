@@ -6,6 +6,9 @@
       Achieve new milestones and growth.
     </p>
     <form class="w-full card" @submit.prevent="createCompany">
+      <div class="mb-[2px] mx-auto">
+        <Avatar :name="company.name" :image="logoPreview" />
+      </div>
       <div class="form-group">
         <label for="company" class="text-grey">Company Name</label>
         <input
@@ -25,19 +28,12 @@
           id="logo"
           type="file"
           accept="image/png, image/jpeg, image/gif, image/svg+xml"
-          class="input-field file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+          class="file:mr-4 file:py-[11px] file:px-6 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-200 hover:file:bg-gray-300 file:transition-all file:cursor-pointer"
           @change="handleFileChange"
         />
         <span v-if="errors.logo" class="text-sm text-red-500">
           {{ errors.logo[0] }}
         </span>
-        <div v-if="logoPreview" class="mt-4">
-          <img
-            :src="logoPreview"
-            alt="Image Preview"
-            class="object-cover w-32 h-32"
-          />
-        </div>
       </div>
       <button type="submit" class="w-full btn btn-primary mt-[14px]">
         Create
@@ -52,7 +48,11 @@
 </template>
 
 <script>
+import Avatar from '@/components/Avatar'
 export default {
+  components: {
+    Avatar,
+  },
   data() {
     return {
       logoPreview: null,

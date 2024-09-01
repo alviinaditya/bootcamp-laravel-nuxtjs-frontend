@@ -5,39 +5,76 @@
       Add your new people to grow the <br />
       company reaching their goals
     </p>
-    <form class="w-full card">
+    <form class="w-full card" @submit.prevent="nextStep">
       <div class="form-group">
-        <label for="" class="text-grey">Complete Name</label>
-        <input type="text" class="input-field" />
+        <label for="name" class="text-grey">Complete Name</label>
+        <input
+          id="name"
+          type="text"
+          class="input-field"
+          placeholder="Full Name"
+          v-model="localEmployeeData.name"
+        />
       </div>
       <div class="form-group">
-        <label for="" class="text-grey">Email Address</label>
-        <input type="email" class="input-field" />
+        <label for="email" class="text-grey">Email Address</label>
+        <input
+          id="email"
+          type="email"
+          class="input-field"
+          placeholder="email@example.com"
+          v-model="localEmployeeData.email"
+        />
       </div>
       <div class="form-group">
-        <label for="" class="text-grey">Gender</label>
+        <label for="gender" class="text-grey">Gender</label>
         <select
-          name=""
-          id=""
+          id="gender"
           class="appearance-none input-field form-icon-chevron_down"
+          v-model="localEmployeeData.gender"
         >
-          <option value="" selected>Male</option>
-          <option value="">Female</option>
+          <option value="" hidden disabled>Select Gender</option>
+          <option value="MALE">Male</option>
+          <option value="FEMALE">Female</option>
         </select>
       </div>
       <div class="form-group">
-        <label for="" class="text-grey">Age</label>
-        <input type="number" class="input-field" />
+        <label for="age" class="text-grey">Age</label>
+        <input
+          id="age"
+          type="number"
+          class="input-field"
+          placeholder="Enter age"
+          v-model="localEmployeeData.age"
+        />
       </div>
-      <a href="employee_create-2.html" class="w-full btn btn-primary mt-[14px]">
+      <button type="submit" class="w-full btn btn-primary mt-[14px]">
         Continue
-      </a>
+      </button>
     </form>
   </section>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
   layout: 'form',
+  data() {
+    return {
+      localEmployeeData: {
+        ...this.$store.state.companies.employees.employeeData,
+      },
+    }
+  },
+  methods: {
+    ...mapActions('companies/employees', ['updateEmployeeData']),
+    nextStep() {
+      this.updateEmployeeData(this.localEmployeeData)
+      this.$router.push({
+        name: 'companies-id-employees-finalizing',
+      })
+      console.log(this.employeeData)
+    },
+  },
 }
 </script>

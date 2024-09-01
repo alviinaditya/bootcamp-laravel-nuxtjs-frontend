@@ -27,10 +27,12 @@
         <form class="shrink md:w-[516px] w-full">
           <input
             type="text"
-            name=""
-            id=""
+            name="search"
+            id="search"
             class="input-field !outline-none !border-none italic form-icon-search ring-indigo-200 focus:ring-2 transition-all duration-300 w-full"
-            placeholder="Search people, team, project"
+            placeholder="Search role name"
+            v-model="searchQuery"
+            @input="filterRoles"
           />
         </form>
         <a
@@ -52,66 +54,41 @@
             <div class="text-xl font-medium text-dark">Available</div>
             <p class="text-grey">Empower company</p>
           </div>
-          <NuxtLink :to="{ name: 'roles-create' }" class="btn btn-primary"
+          <NuxtLink
+            :to="{ name: 'companies-id-roles-create' }"
+            class="btn btn-primary"
             >New Role</NuxtLink
           >
         </div>
       </div>
 
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-[30px]">
-        <div class="items-center card !flex-row gap-4">
-          <a
-            href="#"
-            class="absolute inset-0 focus:ring-2 ring-primary rounded-[26px]"
-          ></a>
-          <img src="/assets/svgs/ric-flag.svg" alt="" />
+      <div
+        v-if="loadingRoles"
+        class="grid md:grid-cols-2 lg:grid-cols-3 gap-[30px]"
+      >
+        <div v-for="i in 3" :key="i" class="items-center card !flex-row gap-4">
+          <Skeleton type="circle" class="w-16 h-16" />
           <div>
-            <div class="mb-1 font-semibold text-dark">Product Designer</div>
-            <p class="text-grey">12 people assigned</p>
+            <Skeleton class="h-4 mb-2 w-28" />
+            <Skeleton class="w-24 h-4 mb-2" />
           </div>
         </div>
-        <div class="items-center card !flex-row gap-4">
+      </div>
+
+      <div v-else class="grid md:grid-cols-2 lg:grid-cols-3 gap-[30px]">
+        <div
+          v-for="role in filteredRoles"
+          :key="role.id"
+          class="items-center card !flex-row gap-4"
+        >
           <a
             href="#"
             class="absolute inset-0 focus:ring-2 ring-primary rounded-[26px]"
           ></a>
-          <img src="/assets/svgs/ric-flag.svg" alt="" />
+          <Avatar :name="role.name" />
           <div>
-            <div class="mb-1 font-semibold text-dark">iOS Engineer</div>
-            <p class="text-grey">12 people assigned</p>
-          </div>
-        </div>
-        <div class="items-center card !flex-row gap-4">
-          <a
-            href="#"
-            class="absolute inset-0 focus:ring-2 ring-primary rounded-[26px]"
-          ></a>
-          <img src="/assets/svgs/ric-flag.svg" alt="" />
-          <div>
-            <div class="mb-1 font-semibold text-dark">Marketing</div>
-            <p class="text-grey">12 people assigned</p>
-          </div>
-        </div>
-        <div class="items-center card !flex-row gap-4">
-          <a
-            href="#"
-            class="absolute inset-0 focus:ring-2 ring-primary rounded-[26px]"
-          ></a>
-          <img src="/assets/svgs/ric-flag.svg" alt="" />
-          <div>
-            <div class="mb-1 font-semibold text-dark">DevOps Power</div>
-            <p class="text-grey">12 people assigned</p>
-          </div>
-        </div>
-        <div class="items-center card !flex-row gap-4">
-          <a
-            href="#"
-            class="absolute inset-0 focus:ring-2 ring-primary rounded-[26px]"
-          ></a>
-          <img src="/assets/svgs/ric-flag.svg" alt="" />
-          <div>
-            <div class="mb-1 font-semibold text-dark">Quality Assurance</div>
-            <p class="text-grey">12 people assigned</p>
+            <div class="mb-1 font-semibold text-dark">{{ role.name }}</div>
+            <p class="text-grey">{{ role.employees_count }} people assigned</p>
           </div>
         </div>
       </div>
@@ -120,7 +97,37 @@
 </template>
 
 <script>
+import Avatar from '@/components/Avatar.vue'
+import { mapActions, mapState } from 'vuex'
 export default {
   layout: 'dashboard',
+  data() {
+    return {
+      searchQuery: '',
+      filteredRoles: [],
+    }
+  },
+  mounted() {
+    this.fetchRoles(this.$route.params.id)
+    this.filterRoles()
+  },
+  computed: {
+    ...mapState('companies/roles', ['roles', 'loadingRoles', 'errorRoles']),
+  },
+  methods: {
+    ...mapActions('companies/roles', ['fetchRoles']),
+    filterRoles() {
+      const query = this.searchQuery.toLowerCase()
+      if (!query) {
+        this.filteredRoles = this.roles
+      }
+      this.filteredRoles = this.roles.filter((role) => {
+        return role.name.toLowerCase().includes(query)
+      })
+    },
+  },
+  components: {
+    Avatar,
+  },
 }
 </script>

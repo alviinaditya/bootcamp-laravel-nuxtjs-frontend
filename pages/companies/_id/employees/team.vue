@@ -9,13 +9,13 @@
       class="w-full card !max-w-[560px] sm:!flex-row items-center justify-between"
     >
       <div class="flex flex-row items-center gap-4">
-        <img src="/assets/images/user-f-1.png" width="70" alt="" />
+        <Avatar :name="localEmployeeData.name" :image="photoPreview" />
         <div>
-          <div class="text-lg font-semibold">Andini Danna</div>
-          <p class="text-base text-grey">ke@manasihhbang.com</p>
+          <div class="text-lg font-semibold">{{ localEmployeeData.name }}</div>
+          <p class="text-base text-grey">{{ localEmployeeData.email }}</p>
         </div>
       </div>
-      <p class="text-right text-grey">Product Designer</p>
+      <p class="text-right text-grey">{{ localEmloyeeRole }}</p>
     </div>
 
     <!-- Your Teams -->
@@ -24,73 +24,43 @@
       <div class="mb-[30px]">
         <div class="flex items-center justify-between gap-6">
           <div>
-            <div class="text-xl font-medium text-dark">Your Teams</div>
+            <div class="text-xl font-medium text-dark">Select Teams</div>
             <p class="text-grey">Improve your growth</p>
           </div>
         </div>
       </div>
 
-      <form>
+      <form @submit.prevent="nextStep">
         <div
           class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:gap-10 lg:gap-3 mb-[50px]"
         >
-          <div class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0">
+          <div
+            v-for="team in teams"
+            :key="team.id"
+            class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0"
+          >
             <input
               type="radio"
-              name="productGrowth"
-              id="productGrowth"
+              :name="team.name"
+              :id="team.name"
               class="absolute inset-0 checked:ring-2 ring-primary rounded-[26px] appearance-none"
+              :value="team.id"
+              v-model="localEmployeeData.team_id"
+              @click="updateEmployeeData({ team_id: team.id })"
             />
-            <img src="/assets/svgs/ric-box.svg" alt="" />
+            <Avatar :icon="team.icon" :name="team.name" />
             <div class="mt-6 mb-1 font-semibold text-center text-dark">
-              Product Growth
+              {{ team.name }}
             </div>
-            <p class="text-center text-grey">810 People</p>
-          </div>
-          <div class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0">
-            <input
-              type="radio"
-              name="marketing"
-              id="marketing"
-              class="absolute inset-0 checked:ring-2 ring-primary rounded-[26px] appearance-none"
-            />
-            <img src="/assets/svgs/ric-target.svg" alt="" />
-            <div class="mt-6 mb-1 font-semibold text-center text-dark">
-              Marketing
-            </div>
-            <p class="text-center text-grey">15,810 People</p>
-          </div>
-          <div class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0">
-            <input
-              type="radio"
-              name="globalization"
-              id="globalization"
-              class="absolute inset-0 checked:ring-2 ring-primary rounded-[26px] appearance-none"
-            />
-            <img src="/assets/svgs/ric-globe.svg" alt="" />
-            <div class="mt-6 mb-1 font-semibold text-center text-dark">
-              Globalization
-            </div>
-            <p class="text-center text-grey">300 People</p>
-          </div>
-          <div class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0">
-            <input
-              type="radio"
-              name="gamification"
-              id="gamification"
-              class="absolute inset-0 checked:ring-2 ring-primary rounded-[26px] appearance-none"
-            />
-            <img src="/assets/svgs/ric-award.svg" alt="" />
-            <div class="mt-6 mb-1 font-semibold text-center text-dark">
-              Gamification
-            </div>
-            <p class="text-center text-grey">25 People</p>
+            <p class="text-center text-grey">
+              {{ team.employees_count }} People
+            </p>
           </div>
         </div>
         <div class="flex justify-center">
-          <a href="employees.html" id="continueBtn" class="btn btn-primary">
-            Continue
-          </a>
+          <button type="submit" id="continueBtn" class="btn btn-primary">
+            Complete
+          </button>
         </div>
       </form>
     </section>
@@ -98,7 +68,60 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex'
+import Avatar from '~/components/Avatar.vue'
 export default {
   layout: 'form',
+  components: {
+    Avatar,
+  },
+  data() {
+    return {
+      photoPreview: null,
+      localEmployeeData: {
+        ...this.$store.state.companies.employees.employeeData,
+      },
+      localEmloyeeRole: this.$store.state.companies.employees.employeeRole,
+    }
+  },
+  mounted() {
+    this.fetchTeams(this.$route.params.id)
+    this.updatePhotoPreview(this.localEmployeeData.photo)
+  },
+  computed: {
+    ...mapState('companies/teams', ['teams', 'loadingTeams', 'errorTeams']),
+  },
+  methods: {
+    ...mapActions('companies/teams', ['fetchTeams']),
+    ...mapActions('companies/employees', [
+      'updateEmployeeData',
+      'createEmployee',
+    ]),
+    nextStep() {
+      this.createEmployee(this.localEmployeeData).then((response) => {
+        if (response.code === 200) {
+          this.$router.push({
+            name: 'companies-id-employees',
+          })
+        }
+      })
+    },
+    updatePhotoPreview(photo) {
+      if (photo instanceof File) {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          this.photoPreview = e.target.result
+        }
+        reader.readAsDataURL(photo)
+      } else {
+        this.photoPreview = null
+      }
+    },
+    handleFileChange(event) {
+      const file = event.target.files[0]
+      this.localEmployeeData.photo = file || null
+      this.updatePhotoPreview(file)
+    },
+  },
 }
 </script>

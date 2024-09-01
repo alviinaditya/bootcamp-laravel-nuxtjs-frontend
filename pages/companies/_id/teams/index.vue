@@ -27,10 +27,12 @@
         <form class="shrink md:w-[516px] w-full">
           <input
             type="text"
-            name=""
-            id=""
+            name="search"
+            id="search"
             class="input-field !outline-none !border-none italic form-icon-search ring-indigo-200 focus:ring-2 transition-all duration-300 w-full"
-            placeholder="Search people, team, project"
+            placeholder="Search team name"
+            v-model="searchQuery"
+            @input="filterTeams"
           />
         </form>
         <a
@@ -52,47 +54,61 @@
             <div class="text-xl font-medium text-dark">Available</div>
             <p class="text-grey">Empower company</p>
           </div>
-          <NuxtLink :to="{ name: 'teams-create' }" class="btn btn-primary"
+          <NuxtLink
+            :to="{ name: 'companies-id-teams-create' }"
+            class="btn btn-primary"
             >Build New Team</NuxtLink
           >
         </div>
       </div>
 
+      <!-- Team Skeleton -->
       <div
+        v-if="loadingTeams"
         class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:gap-10 lg:gap-3"
       >
-        <div class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0">
-          <a
-            href="#"
-            class="absolute inset-0 focus:ring-2 ring-primary rounded-[26px]"
-          ></a>
-          <img src="/assets/svgs/ric-box.svg" alt="" />
-          <div class="mt-6 mb-1 font-semibold text-center text-dark">
-            Growth Marketing
-          </div>
-          <p class="text-center text-grey">12 People</p>
+        <div
+          v-for="i in 4"
+          :key="i"
+          class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0"
+        >
+          <Skeleton type="circle" class="w-16 h-16" />
+          <Skeleton class="h-4 mt-6 mb-2 w-28" />
+          <Skeleton class="w-20 h-4 mb-4" />
+          <Skeleton type="circle" class="w-20 h-6" />
         </div>
-        <div class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0">
+      </div>
+      <!-- Team Cards -->
+      <div
+        v-else
+        class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:gap-10 lg:gap-3"
+      >
+        <div
+          v-for="team in filteredTeams"
+          :key="team.id"
+          class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0"
+        >
           <a
             href="#"
             class="absolute inset-0 focus:ring-2 ring-primary rounded-[26px]"
           ></a>
-          <img src="/assets/svgs/ric-target.svg" alt="" />
+          <Avatar :icon="team.icon" :name="team.name" />
           <div class="mt-6 mb-1 font-semibold text-center text-dark">
-            User Growth
+            {{ team.name }}
           </div>
-          <p class="text-center text-grey">5,312 People</p>
-        </div>
-        <div class="items-center card py-6 md:!py-10 md:!px-[38px] !gap-y-0">
-          <a
-            href="#"
-            class="absolute inset-0 focus:ring-2 ring-primary rounded-[26px]"
-          ></a>
-          <img src="/assets/svgs/ric-award.svg" alt="" />
-          <div class="mt-6 mb-1 font-semibold text-center text-dark">
-            Gamification
+          <p class="mb-2 text-center text-grey">
+            {{ team.employees_count }} People
+          </p>
+          <div
+            class="px-4 py-1 text-xs text-center rounded-full"
+            :class="
+              team.status
+                ? 'bg-green-100 text-green-600'
+                : 'bg-red-100 text-red-600'
+            "
+          >
+            {{ team.status ? 'Active' : 'Inactive' }}
           </div>
-          <p class="text-center text-grey">893 People</p>
         </div>
       </div>
     </section>
@@ -100,7 +116,37 @@
 </template>
 
 <script>
+import Avatar from '~/components/Avatar.vue'
+import { mapActions, mapState } from 'vuex'
 export default {
   layout: 'dashboard',
+  data() {
+    return {
+      searchQuery: '',
+      filteredTeams: [],
+    }
+  },
+  mounted() {
+    this.fetchTeams(this.$route.params.id)
+    this.filterTeams()
+  },
+  computed: {
+    ...mapState('companies/teams', ['teams', 'loadingTeams', 'errorTeams']),
+  },
+  methods: {
+    ...mapActions('companies/teams', ['fetchTeams']),
+    filterTeams() {
+      const query = this.searchQuery.toLowerCase()
+      if (!query) {
+        this.filteredTeams = this.teams
+      }
+      this.filteredTeams = this.teams.filter((team) => {
+        return team.name.toLowerCase().includes(query)
+      })
+    },
+  },
+  components: {
+    Avatar,
+  },
 }
 </script>

@@ -47,10 +47,9 @@ export default {
   methods: {
     async loginUser() {
       try {
-        const response = await this.$auth.loginWith('local', {
+        await this.$auth.loginWith('local', {
           data: this.login,
         })
-        console.log(response)
       } catch (error) {
         console.log(error)
       }

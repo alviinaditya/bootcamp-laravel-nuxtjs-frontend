@@ -21,8 +21,9 @@
         </select>
       </div>
       <button
-        @click.prevent="openCompany"
-        class="w-full btn btn-primary mt-[14px]"
+        @click="openCompany"
+        class="w-full btn btn-primary mt-[14px] disabled:bg-gray-300 disabled:cursor-not-allowed"
+        :disabled="!selectedCompany"
       >
         Continue
       </button>
@@ -44,8 +45,12 @@ export default {
     }
   },
   async fetch() {
-    const response = await this.$axios.$get('/company')
-    this.companies = response.result.data
+    try {
+      const response = await this.$axios.$get('/company')
+      this.companies = response.result.data
+    } catch (error) {
+      console.log(error)
+    }
   },
   methods: {
     openCompany() {

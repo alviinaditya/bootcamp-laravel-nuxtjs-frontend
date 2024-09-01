@@ -61,7 +61,9 @@
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-grey">Employees</p>
-                <div class="text-[32px] font-bold text-dark mt-[6px]">0</div>
+                <div class="text-[32px] font-bold text-dark mt-[6px]">
+                  {{ loadingEmployees ? '...' : totalEmployees }}
+                </div>
               </div>
               <NuxtLink :to="{ name: 'companies-id-employees-create' }">
                 <img src="/assets/svgs/ric-plus.svg" alt="" />
@@ -72,7 +74,9 @@
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-grey">Teams</p>
-                <div class="text-[32px] font-bold text-dark mt-[6px]">0</div>
+                <div class="text-[32px] font-bold text-dark mt-[6px]">
+                  {{ loadingTeams ? '...' : totalTeams }}
+                </div>
               </div>
               <NuxtLink :to="{ name: 'companies-id-teams-create' }">
                 <img src="/assets/svgs/ric-plus.svg" alt="" />
@@ -151,7 +155,28 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex'
 export default {
   layout: 'dashboard',
+  mounted() {
+    this.fetchTeams(this.$route.params.id)
+    this.fetchEmployees(this.$route.params.id)
+  },
+  computed: {
+    ...mapState('companies/teams', [
+      'totalTeams',
+      'loadingTeams',
+      'errorTeams',
+    ]),
+    ...mapState('companies/employees', [
+      'totalEmployees',
+      'loadingEmployees',
+      'errorEmployees',
+    ]),
+  },
+  methods: {
+    ...mapActions('companies/teams', ['fetchTeams']),
+    ...mapActions('companies/employees', ['fetchEmployees']),
+  },
 }
 </script>
