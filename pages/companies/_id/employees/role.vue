@@ -37,7 +37,9 @@
       <section>
         <Loader v-if="loadingResponsibilities" />
         <div v-else class="flex flex-col gap-4 mt-[10px]">
-          <label for="" class="text-grey"> Responsibilities </label>
+          <span v-if="responsibilities.length" class="text-grey"
+            >Responsibilities</span
+          >
           <div
             v-for="res in responsibilities"
             :key="res.id"

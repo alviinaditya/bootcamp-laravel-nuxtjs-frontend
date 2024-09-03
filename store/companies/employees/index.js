@@ -1,19 +1,11 @@
+import { employeeData } from './utility'
 export const state = () => ({
   employees: [],
   totalEmployees: 0,
   activeEmployees: 0,
   inactiveEmployees: 0,
   employeeRole: '',
-  employeeData: {
-    name: '',
-    email: '',
-    gender: '',
-    age: null,
-    photo: null,
-    phone: '',
-    role_id: '',
-    team_id: '',
-  },
+  employeeData: employeeData(),
   loadingEmployees: false,
   errorEmployees: null,
 })
@@ -23,16 +15,7 @@ export const mutations = {
     state.employeeData = { ...state.employeeData, ...payload }
   },
   RESET_EMPLOYEE_DATA(state) {
-    state.employeeData = {
-      name: '',
-      email: '',
-      gender: '',
-      age: null,
-      photo: null,
-      phone: '',
-      role_id: '',
-      team_id: '',
-    }
+    state.employeeData = employeeData()
   },
   SET_EMPLOYEE_ROLE(state, role) {
     state.employeeRole = role

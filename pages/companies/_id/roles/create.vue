@@ -7,8 +7,13 @@
     </p>
     <form class="w-full card">
       <div class="form-group">
-        <label for="" class="text-grey">Role Name</label>
-        <input type="text" class="input-field" value="Product Marketing" />
+        <label for="role" class="text-grey">Role Name</label>
+        <input
+          id="role"
+          type="text"
+          class="input-field"
+          value="Product Marketing"
+        />
       </div>
       <div class="form-group">
         <label for="idRes" class="text-grey">Responsibility</label>

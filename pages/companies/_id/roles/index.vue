@@ -108,8 +108,9 @@ export default {
     }
   },
   mounted() {
-    this.fetchRoles(this.$route.params.id)
-    this.filterRoles()
+    this.fetchRoles(this.$route.params.id).then(() => {
+      this.filterRoles()
+    })
   },
   computed: {
     ...mapState('companies/roles', ['roles', 'loadingRoles', 'errorRoles']),

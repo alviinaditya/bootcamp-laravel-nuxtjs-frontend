@@ -181,8 +181,9 @@ export default {
     }
   },
   mounted() {
-    this.fetchEmployees(this.$route.params.id)
-    this.filterEmployees()
+    this.fetchEmployees(this.$route.params.id).then(() => {
+      this.filterEmployees()
+    })
   },
   computed: {
     ...mapState('companies/employees', [

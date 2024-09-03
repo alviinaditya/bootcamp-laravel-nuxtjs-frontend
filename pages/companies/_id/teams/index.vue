@@ -127,8 +127,9 @@ export default {
     }
   },
   mounted() {
-    this.fetchTeams(this.$route.params.id)
-    this.filterTeams()
+    this.fetchTeams(this.$route.params.id).then(() => {
+      this.filterTeams()
+    })
   },
   computed: {
     ...mapState('companies/teams', ['teams', 'loadingTeams', 'errorTeams']),
